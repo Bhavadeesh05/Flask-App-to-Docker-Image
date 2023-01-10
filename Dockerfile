@@ -1,10 +1,18 @@
-FROM python:3.9
-ENV PYTHONUNBUFFERED 1
+FROM python:3.7-slim
+
 RUN python -m pip install --upgrade pip
-RUN mkdir /new_app
-WORKDIR /new_app
-ADD . /new_app/
-RUN apt-get update && apt-get install -y vim
+
+# Copy local code to the container image.
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+COPY . ./
+
+
+# Install dependencies
 RUN pip install -r requirements.txt
-EXPOSE 8000
-CMD python app.py
+
+ENV PORT 5000
+
+# Run the flask service on container startup
+#CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 ComplaintsServer
+CMD [ "python", "app.py" ]
